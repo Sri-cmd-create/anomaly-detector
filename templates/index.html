@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Anomaly Detector{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+  <h2>Welcome, {{ session.username }} 👋</h2>
+  <p class="lead">Here are your 5 most recent login attempts:</p>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white">
+    Recent Logins
+  </div>
+  <ul class="list-group list-group-flush">
+    {% if logins %}
+      {% for login in logins %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>IP:</strong> {{ login.ip_address }}<br>
+            <small class="text-muted">{{ login.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+          </div>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="list-group-item text-center text-muted">No login attempts yet.</li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}

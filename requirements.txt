@@ -1,0 +1,11 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Login
+python-dotenv
+pandas
+scikit-learn
+pickle
+werkzeug
+numpy
+datetime

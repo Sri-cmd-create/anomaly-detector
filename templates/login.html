@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm mt-4">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-4">Login</h3>
+        {% if message %}
+          <div class="alert alert-danger text-center">{{ message }}</div>
+        {% endif %}
+        <form method="POST" action="{{ url_for('auth.login') }}">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" name="username" id="username" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" required>
+          </div>
+          <div class="mb-3">
+            <label for="ip" class="form-label">IP</label>
+            <input type="text" class="form-control" name="ip" id="ip">
+          </div>
+          <div class="mb-3">
+            <label for="loc" class="form-label">Location</label>
+            <input type="text" class="form-control" name="loc" id="loc" required>
+          </div>
+          <div class="mb-3">
+            <label for="browser" class="form-label">Browser</label>
+            <input type="text" class="form-control" name="browser" id="browser" required>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+        <p class="mt-3 text-center">Don't have an account? 
+          <a href="{{ url_for('auth.signup') }}">Sign up here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

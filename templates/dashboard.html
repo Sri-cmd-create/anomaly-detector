@@ -1,0 +1,42 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ current_user.username }}!</h1>
+
+        <p>You are now logged in.</p>
+
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+
+        <h2>Recent Login Attempts</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>IP Address</th>
+                    <th>Success</th>
+                    <th>User Agent</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in login_attempts %}
+                <tr>
+                    <td>{{ attempt.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ attempt.ip_address }}</td>
+                    <td>{{ 'Yes' if attempt.success else 'No' }}</td>
+                    <td>{{ attempt.user_agent }}</td>
+                    <td>{{ attempt.location }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
