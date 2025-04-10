@@ -8,3 +8,4 @@ scikit-learn
 werkzeug
 numpy
 requests
+gunicorn
