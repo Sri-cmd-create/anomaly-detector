@@ -1,3 +1,4 @@
+import sqlite3
 from flask import Blueprint, current_app, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required
 import numpy as np
@@ -21,15 +22,15 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         #### actual form submission data - start
-        # ip_address = request.form.get('ip', request.remote_addr)
-        # user_agent = request.form.get('browser', request.headers.get('User-Agent'))
-        # location = request.form.get('loc', get_location_from_ip(ip_address))
+        ip_address = request.form.get('ip', request.remote_addr)
+        user_agent = request.form.get('browser', request.headers.get('User-Agent'))
+        location = request.form.get('loc', get_location_from_ip(ip_address))
         #### actual form submission data - end
 
         #### fake for abnormal testing - start
-        ip_address = "1.1.12.2"
-        user_agent = "TEST"
-        location = "China"
+        # ip_address = "1.1.12.2"
+        # user_agent = "TEST"
+        # location = "China"
         #### fake for abnormal testing - end
         timestamp = datetime.now()
         
@@ -73,28 +74,33 @@ def login():
             hour = pd.Timestamp.now().hour
 
             ### for abnormal login testing- start
-            new_data = {
-                'ip': ['1.11.11.1.111'],  # New IP
-                'browser': ['duckduckgo'],  # New browser
-                'location': ['China']  # New location
-            }
-            new_df = pd.DataFrame(new_data)
-            def safe_transform(encoder, value):
-                if value[0] in encoder.classes_:
-                    return encoder.transform(value)[0]
-                else:
-                    encoder.classes_ = np.append(encoder.classes_, value[0])
-                    return encoder.transform(value)[0]
-            ip_encoded = safe_transform(ip_encoder, [new_df['ip'][0]])
-            browser_encoded = safe_transform(browser_encoder, [new_df['browser'][0]])
-            location_encoded = safe_transform(location_encoder, [new_df['location'][0]])
+            # new_data = {
+            #     'ip': ['1.11.11.1.111'],  # New IP
+            #     'browser': ['duckduckgo'],  # New browser
+            #     'location': ['China']  # New location
+            # }
+            # new_df = pd.DataFrame(new_data)
+            # def safe_transform(encoder, value):
+            #     if value[0] in encoder.classes_:
+            #         return encoder.transform(value)[0]
+            #     else:
+            #         encoder.classes_ = np.append(encoder.classes_, value[0])
+            #         return encoder.transform(value)[0]
+            # ip_encoded = safe_transform(ip_encoder, [new_df['ip'][0]])
+            # browser_encoded = safe_transform(browser_encoder, [new_df['browser'][0]])
+            # location_encoded = safe_transform(location_encoder, [new_df['location'][0]])
             ### for abnormal login testing- end
 
             features = [[ip_encoded, browser_encoded, location_encoded, hour]]
             prediction = model.predict(features)
+            print("Prediction:", prediction)
 
             if prediction[0] == -1:
-                flash('⚠️ Warning: Unusual login activity detected!', 'warning')
+                score = model.decision_function(features)[0]
+                if score < -0.2:
+                    flash('⚠️ Warning: Unusual login activity detected!', 'warning')
+                else:
+                    flash('⚠️ Slight anomaly detected. Please verify.', 'warning')
             else:
                 flash('✅ Login looks normal.', 'success')
                 return redirect(url_for('auth.dashboard'))
@@ -153,3 +159,30 @@ def signup():
         db.session.commit()
         return redirect(url_for('auth.login'))
     return render_template('signup.html')
+
+
+@auth.route('/showlogins')
+def showlogins():
+    conn = sqlite3.connect('instance/db.sqlite3')
+    conn.row_factory = sqlite3.Row  # access rows as dictionaries
+    cursor = conn.cursor()
+    
+    query = '''
+    SELECT 
+        user.id,
+        user.username,
+        user.email,
+        login_attempt.success,
+        login_attempt.ip_address,
+        login_attempt.user_agent,
+        login_attempt.location,
+        login_attempt.username,
+        user.password_hash
+    FROM login_attempt
+    JOIN user ON login_attempt.username = user.username
+    '''
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    
+    conn.close()
+    return render_template('table.html', rows=rows)

@@ -12,7 +12,7 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
-    migrate.init_app(app)
+    migrate.init_app(app, db)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -27,6 +27,10 @@ def create_app():
     @app.route('/')
     def home():
         return redirect(url_for('auth.login'))
+    
+    @app.route('/showlogins')
+    def showlogins():
+        return redirect(url_for('auth.showlogins'))
 
     # 🔥 Load AI models inside app
     with open('isolation_forest_model.pkl', 'rb') as f:

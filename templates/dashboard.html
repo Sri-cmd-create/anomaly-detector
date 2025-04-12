@@ -28,7 +28,11 @@
             <tbody>
                 {% for attempt in login_attempts %}
                 <tr>
-                    <td>{{ attempt.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>
+                        {% if attempt.timestamp is not none and attempt.timestamp != '' %}
+                            {{ attempt.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                        {% endif %}
+                    </td>
                     <td>{{ attempt.ip_address }}</td>
                     <td>{{ 'Yes' if attempt.success else 'No' }}</td>
                     <td>{{ attempt.user_agent }}</td>

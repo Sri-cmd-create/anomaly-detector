@@ -36,8 +36,8 @@ def preprocess_data(df):
 
 # Step 3: Train Isolation Forest
 def train_model(X):
-    model = IsolationForest(contamination=0.05, random_state=42)
-    model.fit(X)
+    model = IsolationForest(contamination=0.01, random_state=42)
+    model.fit(X.to_numpy())
     return model
 
 # Step 4: Save Model and Encoders
