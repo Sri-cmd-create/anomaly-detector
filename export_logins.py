@@ -1,3 +1,4 @@
+import sqlite3
 import pandas as pd
 
 # Reconnect to the database
